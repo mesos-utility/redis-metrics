@@ -1,0 +1,25 @@
+{
+    "debug": true,
+    "attachtags": "",
+    "http": {
+        "enable": false,
+        "listen": "0.0.0.0:1987"
+    },
+    "transfer": {
+        "enable": true,
+        "addr": "http://127.0.0.1:1988/v1/push",
+        "interval": 30,
+        "timeout": 1000
+    },
+    "daemon": {
+        "enable": true,
+        "timeout": 5,
+        "addrs" : [
+            "127.0.0.1:6379",
+            "127.0.0.1:6380"
+        ],
+        "username": "",
+        "password": ""
+    }
+}
+

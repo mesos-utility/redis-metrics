@@ -1,0 +1,39 @@
+{
+	"ImportPath": "github.com/mesos-utility/redis-metrics",
+	"GoVersion": "go1.5",
+	"GodepVersion": "v62",
+	"Deps": [
+		{
+			"ImportPath": "github.com/golang/glog",
+			"Rev": "fca8c8854093a154ff1eb580aae10276ad6b1b5f"
+		},
+		{
+			"ImportPath": "github.com/gosexy/redis",
+			"Rev": "19c427d2a3bc8b8cdbb2cbb8f313ed141cb78096"
+		},
+		{
+			"ImportPath": "github.com/open-falcon/common/model",
+			"Rev": "90353af2020b999010d5448ee553778c1c98dbb9"
+		},
+		{
+			"ImportPath": "github.com/open-falcon/common/utils",
+			"Rev": "90353af2020b999010d5448ee553778c1c98dbb9"
+		},
+		{
+			"ImportPath": "github.com/toolkits/file",
+			"Rev": "ab007cd1c33919068b9b9538b5b4be22d833c5f1"
+		},
+		{
+			"ImportPath": "github.com/toolkits/net",
+			"Rev": "4af4ba7be792e3d19bf094f9a9f465255c81a152"
+		},
+		{
+			"ImportPath": "github.com/xiam/resp",
+			"Rev": "04b037c5d609117402713f2842683bd7f3010795"
+		},
+		{
+			"ImportPath": "menteslibres.net/gosexy/to",
+			"Rev": "c20e083e31230b84ffa23c5d2fb0bc55f5292681"
+		}
+	]
+}
