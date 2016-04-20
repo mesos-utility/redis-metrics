@@ -97,12 +97,6 @@ func collect(addrs []string) {
 			stats := GetRedisInfo(client, secs...)
 			client.Quit()
 
-			//stats["usage"] = g.CalculateMetricRatio(stats["bytes"], stats["limit_maxbytes"])
-			//stats["get_hit_ratio"] = g.CalculateMetricRatio(stats["get_hits"], stats["get_misses"])
-			//stats["incr_hit_ratio"] = g.CalculateMetricRatio(stats["incr_hits"], stats["incr_misses"])
-			//stats["decr_hit_ratio"] = g.CalculateMetricRatio(stats["decr_hits"], stats["decr_misses"])
-			//stats["delete_hit_ratio"] = g.CalculateMetricRatio(stats["delete_hits"], stats["delete_misses"])
-
 			var tags string
 			if port != "" {
 				tags = fmt.Sprintf("port=%s", port)
@@ -143,10 +137,10 @@ func collect(addrs []string) {
 				}
 
 				mvs = append(mvs, metric)
-				glog.Infof("%v\n", metric)
+				//glog.Infof("%v\n", metric)
 			}
 		}
-		//g.SendMetrics(mvs)
+		g.SendMetrics(mvs)
 	}
 }
 
