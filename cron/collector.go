@@ -97,6 +97,8 @@ func collect(addrs []string) {
 			stats := GetRedisInfo(client, secs...)
 			client.Quit()
 
+			stats["keyspace_hit_ratio"] = g.CalculateMetricRatio(stats["keyspace_hits"], stats["keyspace_misses"])
+
 			var tags string
 			if port != "" {
 				tags = fmt.Sprintf("port=%s", port)
@@ -107,21 +109,18 @@ func collect(addrs []string) {
 
 			now := time.Now().Unix()
 			var suffix, vtype string
-			for k, v := range stats {
-				if value, ok := gaugess[k]; ok {
-					if value == 1 {
-						suffix = ""
-						vtype = "GAUGE"
-					} else {
-						suffix = "_cps"
-						vtype = "COUNTER"
-					}
+			for k, v := range gaugess {
+				if v == 1 {
+					suffix = ""
+					vtype = "GAUGE"
 				} else {
-					continue
+					suffix = "_cps"
+					vtype = "COUNTER"
 				}
 
-				if k == "keyspace_hit_ratio" {
-					stats["keyspace_hit_ratio"] = g.CalculateMetricRatio(stats["keyspace_hits"], stats["keyspace_misses"])
+				value, ok := stats[k]
+				if !ok {
+					continue
 				}
 
 				key := fmt.Sprintf("redis.%s%s", k, suffix)
@@ -129,7 +128,7 @@ func collect(addrs []string) {
 				metric := &model.MetricValue{
 					Endpoint:  hostname,
 					Metric:    key,
-					Value:     v,
+					Value:     value,
 					Timestamp: now,
 					Step:      interval,
 					Type:      vtype,
