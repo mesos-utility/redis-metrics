@@ -3,6 +3,7 @@ package g
 import (
 	"fmt"
 	"os"
+	"runtime/pprof"
 	"strconv"
 	"strings"
 
@@ -47,4 +48,31 @@ func CalculateMetricRatio(metrics ...string) string {
 	} else {
 		return fmt.Sprintf("%.2f", 100*(first/total))
 	}
+}
+
+// display version info.
+func HandleVersion(displayVersion bool) {
+	if displayVersion {
+		fmt.Println(VERSION)
+		os.Exit(0)
+	}
+}
+
+// set memprofile
+func HandleMemProfile(memprofile string) (file *os.File, err error) {
+	if memprofile != "" {
+		var err error
+		memFile, err := os.Create(memprofile)
+		if err != nil {
+			glog.Warningf("Start write heap profile....")
+			return nil, err
+		} else {
+			glog.Infoln("Start write heap profile....")
+			pprof.WriteHeapProfile(memFile)
+		}
+
+		return memFile, nil
+	}
+
+	return nil, nil
 }
