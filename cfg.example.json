@@ -20,6 +20,21 @@
         ],
         "username": "",
         "password": ""
+    },
+    "metrics": {
+	    "connected_clients":        1,
+	    "blocked_clients":          1,
+	    "used_memory":              1,
+	    "used_memory_rss":          1,
+	    "used_memory_peak":         1,
+	    "mem_fragmentation_ratio":  1,
+	    "total_commands_processed": 0,
+	    "rejected_connections":     0,
+	    "expired_keys":             0,
+	    "evicted_keys":             0,
+	    "keyspace_hits":            0,
+	    "keyspace_misses":          0,
+	    "keyspace_hit_ratio":       1
     }
 }
 

@@ -18,6 +18,7 @@ var gaugess = map[string]int{
 	"blocked_clients":          1,
 	"used_memory":              1,
 	"used_memory_rss":          1,
+	"used_memory_peak":         1,
 	"mem_fragmentation_ratio":  1,
 	"total_commands_processed": 0,
 	"rejected_connections":     0,
@@ -61,6 +62,11 @@ func collect(addrs []string) {
 	var tout = g.Config().Daemon.Timeout
 	timeout := time.Duration(tout) * time.Second
 	timer := time.NewTicker(time.Duration(interval) * time.Second)
+
+	if len(g.Config().Metrics) > 0 {
+		gaugess = g.Config().Metrics
+	}
+	glog.Infof("Collected metrics: %v", gaugess)
 
 	for {
 	REST:

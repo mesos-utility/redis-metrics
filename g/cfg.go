@@ -38,6 +38,7 @@ type GlobalConfig struct {
 	Http       *HttpConfig     `json:"http"`
 	Transfer   *TransferConfig `json:"transfer"`
 	Daemon     *DaemonConfig   `json:"daemon"`
+	Metrics    map[string]int  `json:"metrics"`
 }
 
 var (
