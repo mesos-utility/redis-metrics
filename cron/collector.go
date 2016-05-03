@@ -14,6 +14,7 @@ import (
 )
 
 var gaugess = map[string]int{
+	"alive":                    1,
 	"connected_clients":        1,
 	"blocked_clients":          1,
 	"used_memory":              1,
@@ -55,6 +56,7 @@ func Collect() {
 
 func collect(addrs []string) {
 	// start collect data for redis cluster.
+	var tags string
 	var attachtags = g.Config().AttachTags
 	var interval int64 = g.Config().Transfer.Interval
 	//var username = g.Config().Daemon.UserName
@@ -83,29 +85,7 @@ func collect(addrs []string) {
 				glog.Warningf("Error format addr of ip:port %s", err)
 				continue
 			}
-			client := redis.New()
-			portnum, _ := strconv.ParseUint(port, 10, 32)
-			err = client.ConnectWithTimeout(ip, uint(portnum), timeout)
-			if err != nil {
-				glog.Warningf("Error connect for %s", addr)
-				continue
-			}
-			//redis auth
-			if passwd != "" {
-				ss, _ := client.Auth(passwd)
-				if ss != "OK" {
-					glog.Warningf("Redis client auth failed for %s", addr)
-					continue
-				}
-			}
 
-			var secs = []string{"Server", "Clients", "Memory", "Stats", "Replication", "CPU"}
-			stats := GetRedisInfo(client, secs...)
-			client.Quit()
-
-			stats["keyspace_hit_ratio"] = g.CalculateMetricRatio(stats["keyspace_hits"], stats["keyspace_misses"])
-
-			var tags string
 			if port != "" {
 				tags = fmt.Sprintf("port=%s", port)
 			}
@@ -113,36 +93,71 @@ func collect(addrs []string) {
 				tags = fmt.Sprintf("%s,%s", attachtags)
 			}
 
-			now := time.Now().Unix()
-			var suffix, vtype string
-			for k, v := range gaugess {
-				if v == 1 {
-					suffix = ""
-					vtype = "GAUGE"
-				} else {
-					suffix = "_cps"
-					vtype = "COUNTER"
-				}
+			client := redis.New()
+			portnum, _ := strconv.ParseUint(port, 10, 32)
+			err = client.ConnectWithTimeout(ip, uint(portnum), timeout)
+			if err != nil {
+				glog.Warningf("Error connect for %s", addr)
 
-				value, ok := stats[k]
-				if !ok {
-					continue
-				}
-
-				key := fmt.Sprintf("redis.%s%s", k, suffix)
-
+				now := time.Now().Unix()
 				metric := &model.MetricValue{
 					Endpoint:  hostname,
-					Metric:    key,
-					Value:     value,
+					Metric:    "redis.alive",
+					Value:     0,
 					Timestamp: now,
 					Step:      interval,
-					Type:      vtype,
+					Type:      "GAUGE",
 					Tags:      tags,
 				}
-
 				mvs = append(mvs, metric)
-				//glog.Infof("%v\n", metric)
+			} else {
+				//redis auth
+				if passwd != "" {
+					ss, _ := client.Auth(passwd)
+					if ss != "OK" {
+						glog.Warningf("Redis client auth failed for %s", addr)
+						continue
+					}
+				}
+
+				var secs = []string{"Server", "Clients", "Memory", "Stats", "Replication", "CPU"}
+				stats := GetRedisInfo(client, secs...)
+				client.Quit()
+
+				stats["alive"] = "1"
+				stats["keyspace_hit_ratio"] = g.CalculateMetricRatio(stats["keyspace_hits"], stats["keyspace_misses"])
+
+				now := time.Now().Unix()
+				var suffix, vtype string
+				for k, v := range gaugess {
+					if v == 1 {
+						suffix = ""
+						vtype = "GAUGE"
+					} else {
+						suffix = "_cps"
+						vtype = "COUNTER"
+					}
+
+					value, ok := stats[k]
+					if !ok {
+						continue
+					}
+
+					key := fmt.Sprintf("redis.%s%s", k, suffix)
+
+					metric := &model.MetricValue{
+						Endpoint:  hostname,
+						Metric:    key,
+						Value:     value,
+						Timestamp: now,
+						Step:      interval,
+						Type:      vtype,
+						Tags:      tags,
+					}
+
+					mvs = append(mvs, metric)
+					//glog.Infof("%v\n", metric)
+				}
 			}
 		}
 		g.SendMetrics(mvs)

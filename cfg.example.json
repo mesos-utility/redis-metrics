@@ -22,6 +22,7 @@
         "password": ""
     },
     "metrics": {
+	    "alive":                    1,
 	    "connected_clients":        1,
 	    "blocked_clients":          1,
 	    "used_memory":              1,
