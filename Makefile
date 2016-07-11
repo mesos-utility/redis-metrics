@@ -58,6 +58,15 @@ clean:
 	-rm -f ${NAME}-*.tar.gz
 	-rm -f ${NAME}.spec
 
+# Install action for lvs-metrics rpm package build.
+install:
+	if [ ! -d $(BIN) ]; then $(MKDIR) -p $(BIN); fi
+	$(INSTALL) -m 0755 $(NAME) $(BIN)
+	$(INSTALL) -m 0644 cfg.json $(BIN)
+	$(INSTALL) -m 0755 control $(BIN)
+	[ -d $(MAN) ] || $(MKDIR) -p $(MAN)
+	$(INSTALL) -m 0644 README.md $(MAN)
+
 dist: clean
 	sed -e "s/@@VERSION@@/$(VERSION)/g" \
 		-e "s/@@RELEASE@@/$(RELEASE)/g" \
