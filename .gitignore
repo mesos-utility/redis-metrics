@@ -4,8 +4,9 @@
 *.dump
 *.log.*
 
-_workspace
+#_workspace
 cfg.json
 var/
 
-redis-metrics*
+redis-metrics
+redis-metrics.spec
